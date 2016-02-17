@@ -1,3 +1,11 @@
+/*
+Использование:
+num = BigInteger.parse("-ff", 16) - создание длинного числа.
+num = BigInteger.add(num1, num2) - сложение
+num = BigInteger.sub(num1, num2) - вычитание
+console.log(BigInteger.toString(num)) - вывод числа
+*/
+
 var BigInteger = {};
 
 BigInteger.parse = function(numberString, radix) {
@@ -13,7 +21,7 @@ BigInteger.parse = function(numberString, radix) {
 		}
 	}
 
-	// Truncate leading zeroes
+	// Отрезание нулей в начале
 	for (i = num.digits.length; i-- > 0; ) {
 		if (num.digits[i] != 0) {
 			break;
@@ -121,7 +129,7 @@ BigInteger.subImplementation = function(num1, num2) {
 		digits.push(diff);
 	}
 
-	// Truncate leading zeroes
+	// Отрезание нулей в начале
 	for (i = digits.length; i-- > 0; ) {
 		if (digits[i] != 0) {
 			break;
