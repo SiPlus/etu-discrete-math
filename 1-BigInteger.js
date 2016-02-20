@@ -310,3 +310,50 @@ BigInteger.mul = function(num1, num2) {
 
 	return ret;
 };
+
+/*
+Возведение в степень (основание степени - обычное число, а не длинное).
+
+если число == 0
+	возврат 0
+конец если
+если степень == 0
+	возврат 1
+конец если
+множитель := 1
+цикл пока степень > 1
+	если степень нечетная
+		множитель *= число
+		число *= число
+		степень = (степень - 1) div 2
+	иначе
+		число *= число
+		степень = степень div 2
+	конец если
+конец
+возврат число * множитель
+*/
+BigInteger.pow = function(num, power)
+{
+	if (num.digits.length == 0) { // num == 0
+		return { radix: num.radix, sign: 1, digits: [] };
+	}
+
+	if (power == 0) {
+		return { radix: num.radix, sign: 1, digits: [ 1 ] };
+	}
+
+	var retmul = { radix: num.radix, sign: 1, digits: [ 1 ] };
+	while (power > 1) {
+		if (power & 1) {
+			retmul = BigInteger.mul(num, retmul);
+			num = BigInteger.mul(num, num);
+			power = (power - 1) >> 1;
+		} else {
+			num = BigInteger.mul(num, num);
+			power >>= 1;
+		}
+	}
+
+	return BigInteger.mul(num, retmul);
+}
