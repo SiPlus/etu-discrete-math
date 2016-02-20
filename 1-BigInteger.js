@@ -3,6 +3,7 @@
 num = BigInteger.parse("-ff", 16) - создание длинного числа.
 num = BigInteger.add(num1, num2) - сложение
 num = BigInteger.sub(num1, num2) - вычитание
+num = BigInteger.mul(num1, num2) - умножение
 console.log(BigInteger.toString(num)) - вывод числа
 */
 
@@ -176,4 +177,44 @@ BigInteger.add = function(num1, num2) {
 
 BigInteger.sub = function(num1, num2) {
 	return BigInteger.add(num1, { radix: num2.radix, sign: -num2.sign, digits: num2.digits });
+};
+
+BigInteger.mul = function(num1, num2) {
+	if (num1.radix != num2.radix) {
+		throw "Numbers have different radices";
+	}
+
+	var ret = {
+		radix: num1.radix,
+		sign: num1.sign * num2.sign,
+		digits: []
+	};
+
+	var tmp = {
+		radix: num1.radix
+	};
+
+	for (var i = 0; i < num1.digits.length; ++i) {
+		var j;
+
+		tmp.digits = [];
+		for (j = 0; j < i; ++j) {
+			tmp.digits.push(0);
+		}
+
+		var carry = 0;
+		for (j = 0; j < num2.digits.length; ++j) {
+			var prod = num1.digits[i] * num2.digits[j] + carry;
+			carry = Math.floor(prod / num1.radix);
+			prod -= carry * num1.radix;
+			tmp.digits.push(prod);
+		}
+		if (carry > 0) {
+			tmp.digits.push(carry);
+		}
+
+		ret.digits = BigInteger.addImplementation(ret, tmp);
+	}
+
+	return ret;
 };
