@@ -68,11 +68,15 @@ BigInteger.compareAbs = function(num1, num2) {
 BigInteger.addImplementation = function(num1, num2) {
 	var i, carry = 0, digits = [];
 
-	for (i = 0; i < num2.digits.length; ++i) {
+	var numDigits = Math.max(num1.digits.length, num2.digits.length);
+	for (i = 0; i < numDigits; ++i) {
 		var digit1 = num1.digits[i];
 		var digit2 = num2.digits[i];
 		if (digit1 == null) {
 			digit1 = 0;
+		}
+		if (digit2 == null) {
+			digit2 = 0;
 		}
 		var sum = digit1 + digit2 + carry;
 		carry = 0;
@@ -84,16 +88,7 @@ BigInteger.addImplementation = function(num1, num2) {
 	}
 
 	if (carry != 0) {
-		var digit = num1.digits[i];
-		if (digit == null) {
-			digit = 0;
-		}
-		var sum = digit + 1;
-		carry = 0;
-		if (sum >= num1.radix) {
-			sum -= num1.radix;
-		}
-		digits.push(sum);
+		digits.push(1);
 	}
 
 	return digits;
