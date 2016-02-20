@@ -4,6 +4,7 @@ num = BigInteger.parse("-ff", 16) - создание длинного числа
 num = BigInteger.add(num1, num2) - сложение
 num = BigInteger.sub(num1, num2) - вычитание
 num = BigInteger.mul(num1, num2) - умножение
+num = BigInteger.pow(num1, 2) - возведение в степень
 console.log(BigInteger.toString(num)) - вывод числа
 */
 
