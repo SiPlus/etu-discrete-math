@@ -85,7 +85,7 @@ BigInteger.compareAbs = function(num1, num2) {
 };
 
 /*
-Сложение натуральных чисел.
+Сложение натуральных чисел (функция для внутреннего использования).
 
 перенос := 0
 цикл от наименьшего до наибольшего разряда, количество разрядов = max(количество разрядов каждого из чисел)
@@ -101,6 +101,7 @@ BigInteger.compareAbs = function(num1, num2) {
 если перенос != 0
 	вставить разряд: 1
 конец если
+возврат суммы
 */
 BigInteger.addImplementation = function(num1, num2) {
 	var i, carry = 0, digits = [];
@@ -151,6 +152,7 @@ BigInteger.addImplementation = function(num1, num2) {
 	конец если
 	убрать текущий разряд
 конец если
+возврат разности
 */
 BigInteger.subImplementation = function(num1, num2) {
 	var i, borrow = 0, digits = [];
@@ -184,6 +186,30 @@ BigInteger.subImplementation = function(num1, num2) {
 	return digits;
 };
 
+/*
+Сложение целых чисел.
+
+если знак 1 числа == знак 2 числа
+	знак суммы := знак слагаемых
+	модуль суммы := модуль 1 числа + модуль 2 числа
+	возврат суммы
+конец если
+если модули 1 и 2 числа равны
+	знак суммы := 1
+	модуль суммы := 0
+	возврат суммы
+конец если
+если модуль 1 числа > модуль 2 числа
+	уменьшаемое := число 1
+	вычитаемое := число 2
+иначе
+	уменьшаемое := число 2
+	вычитаемое := число 1
+конец если
+знак суммы := знак уменьшаемого
+модуль суммы := модуль уменьшаемого - модуль вычитаемого
+возврат суммы
+*/
 BigInteger.add = function(num1, num2) {
 	if (num1.radix != num2.radix) {
 		throw "Numbers have different radices";
@@ -243,6 +269,7 @@ BigInteger.sub = function(num1, num2) {
 	конец если
 	произведение += временное число
 конец цикла
+возврат произведения
 */
 BigInteger.mul = function(num1, num2) {
 	if (num1.radix != num2.radix) {
