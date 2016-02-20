@@ -115,30 +115,20 @@ BigInteger.addImplementation = function(num1, num2) {
 BigInteger.subImplementation = function(num1, num2) {
 	var i, borrow = 0, digits = [];
 
-	for (i = 0; i < num2.digits.length; ++i) {
+	for (i = 0; i < num1.digits.length; ++i) {
 		var digit1 = num1.digits[i];
 		var digit2 = num2.digits[i];
 		if (digit1 == null) {
 			digit1 = 0;
+		}
+		if (digit2 == null) {
+			digit2 = 0;
 		}
 		var diff = digit1 - digit2 - borrow;
 		carry = 0;
 		if (diff < 0) {
 			diff += num1.radix;
 			borrow = 1;
-		}
-		digits.push(diff);
-	}
-
-	if (borrow != 0) {
-		var digit = num1.digits[i];
-		if (digit == null) {
-			digit = 0;
-		}
-		var diff = digit - 1;
-		borrow = 0;
-		if (diff < 0) {
-			diff += num1.radix;
 		}
 		digits.push(diff);
 	}
