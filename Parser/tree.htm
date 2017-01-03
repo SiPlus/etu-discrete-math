@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Binary tree parser</title>
+	<script src="tree.js"></script>
+	<script>
+		function parseTree() {
+			var output = document.getElementById('treeOutput');
+			try {
+				output.innerHTML = (new TreeParser(document.getElementById('treeInput').value)).toHTML();
+			} catch (e) {
+				output.innerHTML = '';
+				output.appendChild(document.createTextNode(e));
+			}
+		}
+	</script>
+</head>
+<body>
+	<h1>Binary tree parser</h1>
+	<p>Text representation of the tree:</p>
+	<p>
+		<input type="text" id="treeInput"></input>
+		<button onclick="parseTree()">Build syntax tree</button>
+	</p>
+	<div id="treeOutput"></div>
+</body>
+</html>
