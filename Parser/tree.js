@@ -48,8 +48,7 @@ TreeParser.prototype.parseBranches = function(siblings) {
 	var syntaxNode = { type: 'Branches', children: [] };
 
 	if (this.parseNode(syntaxNode.children)) { // Альтернатива: <узел><ветвь справа от узла>
-		if (this.parseBranchRightOfNode(syntaxNode.children)) { // <ветвь справа от узла>
-		} else {
+		if (!this.parseBranchRightOfNode(syntaxNode.children)) { // <ветвь справа от узла>
 			throw "Node with the left branch being a node has an invalid right branch";
 		}
 	} else if (this.parseLeftLeaf(syntaxNode.children)) { // Альтернатива: <левый лист>
