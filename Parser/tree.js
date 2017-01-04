@@ -24,6 +24,7 @@ TreeParser.prototype.parseNode = function(siblings) {
 
 	if (this.peek() === '(') { // Альтернатива: (<ветви>)
 		this.advance();
+		syntaxNode.children.push({ type: 'Opening bracket' });
 
 		if (!this.parseBranches(syntaxNode.children)) {
 			throw "Node is invalid";
@@ -33,6 +34,7 @@ TreeParser.prototype.parseNode = function(siblings) {
 			throw "Node has unmatched brackets";
 		}
 		this.advance();
+		syntaxNode.children.push({ type: 'Closing bracket' });
 	} else { // Не узел
 		return false;
 	}
