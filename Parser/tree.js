@@ -2,7 +2,10 @@ var TreeParser = function(string) {
 	this.string = string;
 	this.currentCharacter = 0;
 	this.syntaxTree = { type: 'Beginning', children: [] };
-	if (!this.parseNode(this.syntaxTree.children)) {
+	var character = this.peek();
+	if (character === '(') {
+		this.parseNode(this.syntaxTree);
+	} else {
 		throw "Couldn't parse the starting node";
 	}
 	if (this.peek().length !== 0) {
@@ -18,98 +21,77 @@ TreeParser.prototype.advance = function() {
 	++this.currentCharacter;
 }
 
-// <узел> ::= (<ветви>)
-TreeParser.prototype.parseNode = function(siblings) {
+TreeParser.prototype.parseNode = function(parentNode) {
 	var syntaxNode = { type: 'Node', children: [] };
-
-	if (this.peek() === '(') { // Альтернатива: (<ветви>)
-		this.advance();
+	var character = this.peek();
+	if (character === '(') {
 		syntaxNode.children.push({ type: 'Opening bracket' });
-
-		if (!this.parseBranches(syntaxNode.children)) {
-			throw "Node is invalid";
-		}
-
+		this.advance();
+		this.parseBranches(syntaxNode);
 		if (this.peek() !== ')') {
 			throw "Node has unmatched brackets";
 		}
-		this.advance();
 		syntaxNode.children.push({ type: 'Closing bracket' });
-	} else { // Не узел
-		return false;
+		this.advance();
+	} else {
+		throw "Node is invalid";
 	}
-
-	siblings.push(syntaxNode);
-	return true;
+	parentNode.children.push(syntaxNode);
 }
 
-// <ветви> ::= <узел><ветвь справа от узла> | <левый лист>
-TreeParser.prototype.parseBranches = function(siblings) {
+TreeParser.prototype.parseBranches = function(parentNode) {
 	var syntaxNode = { type: 'Branches', children: [] };
-
-	if (this.parseNode(syntaxNode.children)) { // Альтернатива: <узел><ветвь справа от узла>
-		if (!this.parseBranchRightOfNode(syntaxNode.children)) { // <ветвь справа от узла>
-			throw "Node with the left branch being a node has an invalid right branch";
-		}
-	} else if (this.parseLeftLeaf(syntaxNode.children)) { // Альтернатива: <левый лист>
-	} else { // Не ветви
-		return false;
+	var character = this.peek();
+	if (character === '(') {
+		this.parseNode(syntaxNode);
+		this.parseBranchRightOfNode(syntaxNode);
+	} else if (character === 'l') {
+		this.parseLeftLeaf(syntaxNode);
+	} else {
+		throw "Branches are invalid";
 	}
-
-	siblings.push(syntaxNode);
-	return true;
+	parentNode.children.push(syntaxNode);
 }
 
-// <ветвь справа от узла> ::= <узел> | l
-TreeParser.prototype.parseBranchRightOfNode = function(siblings) {
+TreeParser.prototype.parseBranchRightOfNode = function(parentNode) {
 	var syntaxNode = { type: 'Branch right of node', children: [] };
-
-	if (this.parseNode(syntaxNode.children)) { // Альтернатива: <узел>
-	} else if (this.parseLeaf(syntaxNode.children)) { // Альтернатива: l
-	} else { // Не распознан
-		return false;
+	var character = this.peek();
+	if (character === '(') {
+		this.parseNode(syntaxNode);
+	} else if (character === 'l') {
+		syntaxNode.children.push({ type: 'Leaf' });
+		this.advance();
+	} else {
+		throw "Branch right of node is invalid";
 	}
-
-	siblings.push(syntaxNode);
-	return true;
+	parentNode.children.push(syntaxNode);
 }
 
-// <левый лист> ::= l<ветвь справа от листа>
-TreeParser.prototype.parseLeftLeaf = function(siblings) {
+TreeParser.prototype.parseLeftLeaf = function(parentNode) {
 	var syntaxNode = { type: 'Left leaf', children: [] };
-
-	if (this.parseLeaf(syntaxNode.children)) { // Альтернатива: l<ветвь справа от листа>
-		this.parseBranchRightOfLeaf(syntaxNode.children);
-	} else { // Не левый лист
-		return false;
+	var character = this.peek();
+	if (character === 'l') {
+		syntaxNode.children.push({ type: 'Leaf' });
+		this.advance();
+		this.parseBranchRightOfLeaf(syntaxNode);
+	} else {
+		throw "Left leaf is invalid";
 	}
-
-	siblings.push(syntaxNode);
-	return true;
+	parentNode.children.push(syntaxNode);
 }
 
-// <ветвь справа от листа> ::= <узел> | l | пусто
-TreeParser.prototype.parseBranchRightOfLeaf = function(siblings) {
+TreeParser.prototype.parseBranchRightOfLeaf = function(parentNode) {
 	var syntaxNode = { type: 'Branch right of leaf', children: [] };
-
-	if (this.parseNode(syntaxNode.children)) { // Альтернатива: <узел>
-	} else if (this.parseLeaf(syntaxNode.children)) { // Альтернатива: l
-	} else { // Пустой символ
+	var character = this.peek();
+	if (character === '(') {
+		this.parseNode(syntaxNode);
+	} else if (character === 'l') {
+		syntaxNode.children.push({ type: 'Leaf' });
+		this.advance();
+	} else {
 		syntaxNode.children.push({ type: 'Blank' });
 	}
-
-	siblings.push(syntaxNode);
-}
-
-// Терминал l
-TreeParser.prototype.parseLeaf = function(siblings) {
-	if (this.peek() === 'l') { // Распознан
-		this.advance();
-		siblings.push({ type: 'Leaf' });
-		return true;
-	} else { // Не распознан
-		return false;
-	}
+	parentNode.children.push(syntaxNode);
 }
 
 TreeParser.prototype.nodeToHTML = function(node, strings) {
